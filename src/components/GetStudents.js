@@ -21,7 +21,7 @@ const GetStudents = () => {
   const fetchStudents = async () => {
     try {
       const token = sessionStorage.getItem('access_token');
-      const response = await axios.get('http://localhost:4000/api/students/getStudents', {
+      const response = await axios.get('http://localhost:4000/api/getStudents', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

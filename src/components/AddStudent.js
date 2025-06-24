@@ -7,7 +7,10 @@ import {
   Box,
   Paper,
   Alert,
+  Grid,
+  MenuItem,
 } from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import axios from "axios";
 
 const AddStudent = () => {
@@ -33,7 +36,6 @@ const AddStudent = () => {
     setErrorMessage("");
 
     try {
-      // Removed unused response variable
       await axios.post(
         "http://localhost:4000/api/addStudent",
         formData,
@@ -42,10 +44,10 @@ const AddStudent = () => {
         }
       );
 
-      setSuccessMessage("✅ Student added successfully");
+      setSuccessMessage(" Student added successfully");
       setFormData({ firstname: "", lastname: "", gender: "" });
     } catch (error) {
-      console.error("❌ Error:", error.response?.data || error.message);
+      console.error(" Error:", error.response?.data || error.message);
       setErrorMessage(
         error.response?.data?.error?.message || "Failed to add student."
       );
@@ -54,10 +56,13 @@ const AddStudent = () => {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h5" align="center" gutterBottom>
-          Add New Student
-        </Typography>
+      <Paper elevation={4} sx={{ p: 4, borderRadius: 3, backgroundColor: "#fdfdfd" }}>
+        <Box textAlign="center" mb={2}>
+          <PersonAddIcon color="primary" sx={{ fontSize: 40 }} />
+          <Typography variant="h5" mt={1}>
+            Add New Student
+          </Typography>
+        </Box>
 
         {successMessage && <Alert severity="success">{successMessage}</Alert>}
         {errorMessage && (
@@ -66,41 +71,58 @@ const AddStudent = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-          <TextField
-            label="First Name"
-            name="firstname"
-            value={formData.firstname}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
-          <TextField
-            label="Last Name"
-            name="lastname"
-            value={formData.lastname}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
-          <TextField
-            label="Gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          />
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="First Name"
+                name="firstname"
+                value={formData.firstname}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Last Name"
+                name="lastname"
+                value={formData.lastname}
+                onChange={handleChange}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                select
+                label="Gender"
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                fullWidth
+                required
+              >
+                <MenuItem value="">Select Gender</MenuItem>
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Female">Female</MenuItem>
+                
+              </TextField>
+            </Grid>
+          </Grid>
 
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             fullWidth
-            sx={{ mt: 2 }}
+            sx={{
+              mt: 3,
+              py: 1.5,
+              backgroundColor: "#1976d2",
+              "&:hover": {
+                backgroundColor: "#115293",
+              },
+            }}
           >
             Add Student
           </Button>
