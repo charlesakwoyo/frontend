@@ -23,9 +23,10 @@ const Dashboard = () => {
   const actions = [
     { label: "Login", icon: <LoginIcon />, path: "/login", color: "primary" },
     { label: "Register", icon: <PersonAddAltIcon />, path: "/register", color: "secondary" },
-    { label: "Get All Students", icon: <GroupIcon />, path: "/getstudents", color: "success" },
-    { label: "Add Student", icon: <AddCircleIcon />, path: "/addstudent", color: "info" },
-    { label: "Delete Student", icon: <DeleteIcon />, path: "/deletestudent", color: "error" },
+    { label: "All Students", icon: <GroupIcon />, path: "/all-students", color: "success" },
+    { label: "Add Student", icon: <AddCircleIcon />, path: "/add-student", color: "info" },
+    // Delete path needs an ID — use a placeholder or remove it for now
+    { label: "Delete Student", icon: <DeleteIcon />, path: "/delete-student/1", color: "error" },
   ];
 
   return (

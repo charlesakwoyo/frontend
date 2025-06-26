@@ -1,23 +1,35 @@
 // src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import GetStudents from "./components/GetStudents";
+import AllStudents from "./components/AllStudents";
 import AddStudent from "./components/AddStudent";
-import DeleteStudent from "./components/DeleteStudent"; // You’ll create this
+import DeleteStudent from "./components/DeleteStudent";
+import UpdateStudent from "./components/UpdateStudent";
+// import StudentDetails from "./components/StudentDetails"; // Optional
 
 function App() {
   return (
     <Router>
       <Routes>
+        {/* Main Dashboard */}
         <Route path="/" element={<Dashboard />} />
+
+        {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/getstudents" element={<GetStudents />} />
-        <Route path="/addstudent" element={<AddStudent />} />
-        <Route path="/deletestudent" element={<DeleteStudent />} />
+
+        {/* Student Management */}
+        <Route path="/all-students" element={<AllStudents />} />
+        <Route path="/add-student" element={<AddStudent />} />
+        <Route path="/delete-student/:id" element={<DeleteStudent />} />
+        <Route path="/update-student/:student_id" element={<UpdateStudent />} />
+
+        {/* Optional Details Page */}
+        {/* <Route path="/student-details/:student_id" element={<StudentDetails />} /> */}
       </Routes>
     </Router>
   );
