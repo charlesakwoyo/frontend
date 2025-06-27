@@ -1,136 +1,135 @@
+// src/components/UpdateStudent.js
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Container,
   TextField,
-  Typography,
   Button,
-  CircularProgress,
   Paper,
-  Box,
+  Typography,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
-import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const UpdateStudent = () => {
-  const { id } = useParams(); // ✅ Match with route param
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState({
-    firstname: "",
-    lastname: "",
-    gender: "",
-  });
-
+  const { student_id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState({ firstname: "", lastname: "", gender: "" });
+  const [message, setMessage] = useState({ type: '', content: '' });
 
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
-    setLoading(true);
-
-    axios
-      .get(`http://localhost:4000/api/students/getStudent/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        setData({
-          firstname: res.data.firstname,
-          lastname: res.data.lastname,
-          gender: res.data.gender,
+    const fetchStudent = async () => {
+      try {
+        setLoading(true);
+        const token = sessionStorage.getItem("access_token");
+        const res = await axios.get(`http://localhost:4000/api/getStudent/${student_id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
-      })
-      .catch(() => {
-        toast.error("Error fetching student data");
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+        setData(res.data);
+      } catch (err) {
+        setMessage({ type: 'error', content: 'Failed to load student data.' });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStudent();
+  }, [student_id]);
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
 
-  const saveStudent = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    const token = sessionStorage.getItem("accessToken");
-    setLoading(true);
-
-    axios
-      .patch(
-        `http://localhost:4000/api/students/updateStudent/${id}`,
-        data,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then(() => {
-        toast.success("Student updated successfully");
-        navigate("/AllStudents");
-      })
-      .catch(() => {
-        toast.error("An error occurred while updating the record");
-      })
-      .finally(() => setLoading(false));
+    try {
+      setLoading(true);
+      const token = sessionStorage.getItem("access_token");
+      await axios.patch(`http://localhost:4000/api/updateStudent/${student_id}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setMessage({ type: 'success', content: 'Student updated successfully!' });
+      setTimeout(() => navigate("/getstudents"), 1500);
+    } catch (err) {
+      setMessage({ type: 'error', content: 'Update failed. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h5" align="center" gutterBottom>
+      <Paper
+        elevation={4}
+        sx={{
+          p: 4,
+          borderRadius: 3,
+          backgroundColor: "peachpuff",
+        }}
+      >
+        <Typography variant="h5" mb={2} align="center" fontWeight="bold">
           Edit Student
         </Typography>
 
+        {message.content && <Alert severity={message.type}>{message.content}</Alert>}
+
         {loading ? (
-          <Box textAlign="center">
-            <CircularProgress />
-          </Box>
+          <CircularProgress sx={{ display: 'block', mx: 'auto', mt: 4 }} />
         ) : (
-          <form onSubmit={saveStudent}>
+          <form onSubmit={handleUpdate}>
             <TextField
-              fullWidth
               label="First Name"
               name="firstname"
               value={data.firstname}
               onChange={handleChange}
-              margin="normal"
+              fullWidth
               required
+              sx={{ mb: 2 }}
             />
             <TextField
-              fullWidth
               label="Last Name"
               name="lastname"
               value={data.lastname}
               onChange={handleChange}
-              margin="normal"
+              fullWidth
               required
+              sx={{ mb: 2 }}
             />
             <TextField
-              fullWidth
               label="Gender"
               name="gender"
               value={data.gender}
               onChange={handleChange}
-              margin="normal"
+              fullWidth
               required
+              sx={{ mb: 3 }}
             />
             <Button
               variant="contained"
-              color="primary"
               type="submit"
               fullWidth
-              sx={{ mt: 2 }}
+              sx={{
+                backgroundColor: "peru",
+                color: "white",
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#a0522d',
+                },
+                py: 1.5,
+              }}
             >
-              Update Student
+              Update
             </Button>
           </form>
         )}
       </Paper>
-      <ToastContainer />
     </Container>
   );
 };

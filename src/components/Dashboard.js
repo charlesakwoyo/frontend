@@ -1,85 +1,125 @@
 // src/components/Dashboard.js
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
-  Container,
+  AppBar,
+  Toolbar,
   Typography,
-  Grid,
-  Button,
-  Paper,
+  IconButton,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  CssBaseline,
   Box,
   Divider,
+  Button,
+  useTheme,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
 import SchoolIcon from "@mui/icons-material/School";
+import GroupIcon from "@mui/icons-material/Group";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
-import GroupIcon from "@mui/icons-material/Group";
-import LoginIcon from "@mui/icons-material/Login";
-import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthProvider";
+
+const drawerWidth = 240;
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const theme = useTheme();
 
-  const actions = [
-    { label: "Login", icon: <LoginIcon />, path: "/login", color: "primary" },
-    { label: "Register", icon: <PersonAddAltIcon />, path: "/register", color: "secondary" },
-    { label: "All Students", icon: <GroupIcon />, path: "/all-students", color: "success" },
-    { label: "Add Student", icon: <AddCircleIcon />, path: "/add-student", color: "info" },
-    // Delete path needs an ID — use a placeholder or remove it for now
-    { label: "Delete Student", icon: <DeleteIcon />, path: "/delete-student/1", color: "error" },
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const menuItems = [
+    { label: "Get All Students", icon: <GroupIcon />, path: "/getstudents" },
+    { label: "Add Student", icon: <AddCircleIcon />, path: "/addstudent" },
+    { label: "Delete Student", icon: <DeleteIcon />, path: "/deletestudent" },
   ];
 
+  const drawer = (
+    <div>
+      <Toolbar sx={{ justifyContent: "center" }}>
+        <SchoolIcon sx={{ mr: 1 }} color="primary" />
+        <Typography variant="h6" fontWeight="bold">
+          Dashboard
+        </Typography>
+      </Toolbar>
+      <Divider />
+      <List>
+        {menuItems.map((item, i) => (
+          <ListItemButton key={i} onClick={() => navigate(item.path)}>
+            <ListItemIcon>{item.icon}</ListItemIcon>
+            <ListItemText primary={item.label} />
+          </ListItemButton>
+        ))}
+      </List>
+    </div>
+  );
+
   return (
-    <Container maxWidth="md" sx={{ mt: 8 }}>
-      <Paper
-        elevation={6}
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+
+      {/* Top App Bar */}
+      <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
+        <Toolbar>
+          <IconButton color="inherit" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Student Management System
+          </Typography>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={() => {
+              logout();
+              navigate("/login");
+            }}
+            startIcon={<LogoutIcon />}
+          >
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      {/* Sidebar Drawer */}
+      <Drawer
+        variant="permanent"
         sx={{
-          borderRadius: 4,
-          p: 5,
-          background: "linear-gradient(to right, #f7f7ff, #f0f4ff)",
+          width: drawerWidth,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: "border-box",
+            background: "#f4f6fb",
+          },
         }}
       >
-        <Box textAlign="center" mb={4}>
-          <SchoolIcon color="primary" sx={{ fontSize: 50 }} />
-          <Typography variant="h4" gutterBottom fontWeight="bold">
-            Student Management Dashboard
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary">
-            Manage student records with ease
-          </Typography>
-        </Box>
+        {drawer}
+      </Drawer>
 
-        <Divider sx={{ mb: 4 }} />
-
-        <Grid container spacing={3}>
-          {actions.map((action, i) => (
-            <Grid item xs={12} sm={6} key={i}>
-              <Button
-                variant="contained"
-                color={action.color}
-                fullWidth
-                size="large"
-                onClick={() => navigate(action.path)}
-                startIcon={action.icon}
-                sx={{
-                  py: 1.7,
-                  fontWeight: 600,
-                  borderRadius: 2,
-                  textTransform: "capitalize",
-                  boxShadow: 2,
-                  "&:hover": {
-                    transform: "scale(1.02)",
-                    boxShadow: 4,
-                  },
-                }}
-              >
-                {action.label}
-              </Button>
-            </Grid>
-          ))}
-        </Grid>
-      </Paper>
-    </Container>
+      {/* Page Content */}
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, bgcolor: "#f9fbff", p: 3, minHeight: "100vh" }}
+      >
+        <Toolbar />
+        <Typography variant="h4" gutterBottom fontWeight="bold">
+          Welcome to Student Management Dashboard
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Use the side menu to manage students.
+        </Typography>
+      </Box>
+    </Box>
   );
 };
 
